@@ -15,6 +15,7 @@ def analyze_sentiments(comments):
     for comment in comments:
 
         try:
+
             payload = {"inputs": comment}
 
             response = requests.post(
@@ -23,18 +24,14 @@ def analyze_sentiments(comments):
                 json=payload
             )
 
-            # ⭐ VERY IMPORTANT DEBUG LINES
-            print("STATUS CODE:", response.status_code)
-            print("RAW RESPONSE:", response.text)
-
             result = response.json()
 
-            label = result[0]["label"]
-            score = result[0]["score"]
+            # HuggingFace returns list of labels
+            best = max(result, key=lambda x: x["score"])
 
             sentiments.append({
-                "label": label,
-                "score": round(score * 100, 2)
+                "label": best["label"],
+                "score": round(best["score"] * 100, 2)
             })
 
         except Exception as e:
