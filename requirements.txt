@@ -9,5 +9,4 @@ pandas
 streamlit
 matplotlib
 httpx
-transformers
-torch
+vaderSentiment
