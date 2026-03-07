@@ -14,15 +14,15 @@ def analyze_sentiments(comments):
         compound = score["compound"]
 
         if compound >= 0.05:
-            label = "POSITIVE"
+            sentiment = "POSITIVE"
         elif compound <= -0.05:
-            label = "NEGATIVE"
+            sentiment = "NEGATIVE"
         else:
-            label = "NEUTRAL"
+            sentiment = "NEUTRAL"
 
         sentiments.append({
             "comment": comment,
-            "label": label,   # ← IMPORTANT (not "sentiment")
+            "sentiment": sentiment,
             "score": round(compound * 100, 2)
         })
 
