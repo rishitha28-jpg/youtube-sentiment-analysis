@@ -35,10 +35,11 @@ def analyze_video(video_id: str):
         positive = 0
         negative = 0
 
-        for comment, sentiment in zip(comments, sentiments):
+        for comment, sentiment_data in zip(comments, sentiments):
 
-            label = sentiment["label"]
-            score = sentiment["score"]
+            # FIX: changed from sentiment["label"] to sentiment["sentiment"]
+            label = sentiment_data["sentiment"]
+            score = sentiment_data["score"]
 
             if label == "POSITIVE":
                 positive += 1
