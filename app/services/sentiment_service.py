@@ -1,29 +1,31 @@
-
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-# load analyzer once
+# Load analyzer once
 analyzer = SentimentIntensityAnalyzer()
 
 def analyze_sentiments(comments):
 
-    comments = comments[:20]   # limit comments for safety
+    comments = comments[:20]   # limit comments
 
     sentiments = []
 
     for comment in comments:
 
         score = analyzer.polarity_scores(comment)
+        compound = score["compound"]
 
-        if score["compound"] >= 0.05:
+        # Recommended thresholds
+        if compound >= 0.05:
             label = "POSITIVE"
-        elif score["compound"] <= -0.05:
+        elif compound <= -0.05:
             label = "NEGATIVE"
         else:
             label = "NEUTRAL"
 
         sentiments.append({
-            "label": label,
-            "score": round(score["compound"] * 100, 2)
+            "comment": comment,
+            "sentiment": label,
+            "score": round(compound * 100, 2)
         })
 
     return sentiments

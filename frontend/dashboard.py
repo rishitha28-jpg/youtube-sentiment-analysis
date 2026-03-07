@@ -197,7 +197,7 @@ import matplotlib.pyplot as plt
 plt.style.use("ggplot")
 
 # Backend API
-API_URL = "http://127.0.0.1:8000/api/v1/analyze/"
+API_URL = "https://youtube-sentiment-analysis-4dv0.onrender.com/api/v1/analyze/"
 
 # Page config
 st.set_page_config(
