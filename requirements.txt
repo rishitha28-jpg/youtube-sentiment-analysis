@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+requests
+google-api-python-client
+pydantic
+pydantic-settings
+python-dotenv
+pandas
+streamlit
+matplotlibdir 
