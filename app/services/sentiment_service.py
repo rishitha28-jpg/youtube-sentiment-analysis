@@ -5,7 +5,8 @@ API_URL = "https://router.huggingface.co/hf-inference/models/distilbert-base-unc
 
 headers = {
     "Authorization": f"Bearer {settings.HF_API_TOKEN}",
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "Accept": "application/json"
 }
 
 def analyze_sentiments(comments):
@@ -15,10 +16,7 @@ def analyze_sentiments(comments):
     for comment in comments:
 
         try:
-
-            payload = {
-                "inputs": comment
-            }
+            payload = {"inputs": comment}
 
             response = requests.post(
                 API_URL,
@@ -28,18 +26,15 @@ def analyze_sentiments(comments):
             )
 
             print("STATUS:", response.status_code)
-            print("RESPONSE:", response.text)
+            print("RAW:", response.text)
 
             if response.status_code != 200:
-                sentiments.append({
-                    "label": "NEUTRAL",
-                    "score": 0
-                })
+                sentiments.append({"label": "NEUTRAL", "score": 0})
                 continue
 
             result = response.json()
 
-            # HuggingFace returns nested list
+            # Router usually returns [[{label,score},...]]
             if isinstance(result, list) and isinstance(result[0], list):
                 predictions = result[0]
             else:
@@ -53,12 +48,7 @@ def analyze_sentiments(comments):
             })
 
         except Exception as e:
-
             print("Sentiment error:", e)
-
-            sentiments.append({
-                "label": "NEUTRAL",
-                "score": 0
-            })
+            sentiments.append({"label": "NEUTRAL", "score": 0})
 
     return sentiments
