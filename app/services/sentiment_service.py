@@ -21,12 +21,34 @@ def analyze_sentiments(comments):
             response = requests.post(
                 API_URL,
                 headers=headers,
-                json=payload
+                json=payload,
+                timeout=20
             )
+
+            # Debug logs (important for deployment)
+            print("STATUS:", response.status_code)
+            print("RESPONSE:", response.text)
+
+            # If API failed
+            if response.status_code != 200:
+                sentiments.append({
+                    "label": "NEUTRAL",
+                    "score": 0
+                })
+                continue
 
             result = response.json()
 
-            # HuggingFace returns list of labels
+            # Handle API error response
+            if isinstance(result, dict) and "error" in result:
+                print("HF API Error:", result["error"])
+                sentiments.append({
+                    "label": "NEUTRAL",
+                    "score": 0
+                })
+                continue
+
+            # Get highest score label
             best = max(result, key=lambda x: x["score"])
 
             sentiments.append({
@@ -36,7 +58,7 @@ def analyze_sentiments(comments):
 
         except Exception as e:
 
-            print("Sentiment error:", e)
+            print("Sentiment error:", str(e))
 
             sentiments.append({
                 "label": "NEUTRAL",
