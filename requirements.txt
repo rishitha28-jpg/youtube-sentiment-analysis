@@ -1,5 +1,5 @@
 fastapi
-uvicorn
+uvicorn[standard]
 requests
 google-api-python-client
 pydantic
@@ -8,3 +8,4 @@ python-dotenv
 pandas
 streamlit
 matplotlib
+httpx

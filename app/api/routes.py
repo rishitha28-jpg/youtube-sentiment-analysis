@@ -15,6 +15,9 @@ def analyze_video(video_id: str):
 
         comments = get_youtube_comments(video_id)
 
+        # Remove empty comments
+        comments = [c for c in comments if c.strip() != ""]
+
         if not comments:
             raise HTTPException(
                 status_code=404,
@@ -23,14 +26,24 @@ def analyze_video(video_id: str):
 
         print(f"Fetched {len(comments)} comments")
 
-        # Batch sentiment analysis
+        # Run sentiment analysis
         sentiments = analyze_sentiments(comments)
 
         print("Sentiment analysis completed")
 
         results = []
+        positive = 0
+        negative = 0
 
-        for comment, (label, score) in zip(comments, sentiments):
+        for comment, sentiment in zip(comments, sentiments):
+
+            label = sentiment["label"]
+            score = sentiment["score"]
+
+            if label == "POSITIVE":
+                positive += 1
+            elif label == "NEGATIVE":
+                negative += 1
 
             results.append(
                 CommentSentiment(
@@ -40,8 +53,19 @@ def analyze_video(video_id: str):
                 )
             )
 
+        # Calculate overall sentiment
+        if positive > negative:
+            overall = "POSITIVE"
+        elif negative > positive:
+            overall = "NEGATIVE"
+        else:
+            overall = "NEUTRAL"
+
         return VideoSentimentResponse(
             video_id=video_id,
+            overall_sentiment=overall,
+            positive_comments=positive,
+            negative_comments=negative,
             results=results
         )
 

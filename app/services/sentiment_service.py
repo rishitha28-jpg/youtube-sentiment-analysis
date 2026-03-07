@@ -8,38 +8,42 @@ headers = {
     "Content-Type": "application/json"
 }
 
-
 def analyze_sentiments(comments):
 
-    payload = {"inputs": comments}
+    sentiments = []
 
-    try:
-        response = requests.post(
-            API_URL,
-            headers=headers,
-            json=payload,
-            timeout=30
-        )
+    for comment in comments:
 
-        result = response.json()
+        try:
+            payload = {"inputs": comment}
 
-        sentiments = []
+            response = requests.post(
+                API_URL,
+                headers=headers,
+                json=payload
+            )
 
-        for r in result:
+            # ⭐ VERY IMPORTANT DEBUG LINES
+            print("STATUS CODE:", response.status_code)
+            print("RAW RESPONSE:", response.text)
 
-            # HuggingFace returns list of predictions
-            if isinstance(r, list):
+            result = response.json()
 
-                # choose highest score prediction
-                r = max(r, key=lambda x: x["score"])
+            label = result[0]["label"]
+            score = result[0]["score"]
 
-            label = r.get("label", "NEUTRAL")
-            score = r.get("score", 0)
+            sentiments.append({
+                "label": label,
+                "score": round(score * 100, 2)
+            })
 
-            sentiments.append((label, round(score * 100, 2)))
+        except Exception as e:
 
-        return sentiments
+            print("Sentiment error:", e)
 
-    except Exception as e:
-        print("Sentiment error:", e)
-        return [("NEUTRAL", 0.0)] * len(comments)
+            sentiments.append({
+                "label": "NEUTRAL",
+                "score": 0
+            })
+
+    return sentiments
