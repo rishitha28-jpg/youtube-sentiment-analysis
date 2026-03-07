@@ -10,6 +10,9 @@ headers = {
 
 def analyze_sentiments(comments):
 
+    # ⭐ IMPORTANT DEBUG LINE
+    print("HF TOKEN:", settings.HF_API_TOKEN)
+
     sentiments = []
 
     for comment in comments:
@@ -25,11 +28,9 @@ def analyze_sentiments(comments):
                 timeout=20
             )
 
-            # Debug logs (important for deployment)
             print("STATUS:", response.status_code)
             print("RESPONSE:", response.text)
 
-            # If API failed
             if response.status_code != 200:
                 sentiments.append({
                     "label": "NEUTRAL",
@@ -39,7 +40,6 @@ def analyze_sentiments(comments):
 
             result = response.json()
 
-            # Handle API error response
             if isinstance(result, dict) and "error" in result:
                 print("HF API Error:", result["error"])
                 sentiments.append({
@@ -48,7 +48,6 @@ def analyze_sentiments(comments):
                 })
                 continue
 
-            # Get highest score label
             best = max(result, key=lambda x: x["score"])
 
             sentiments.append({
