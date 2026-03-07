@@ -7,4 +7,4 @@ pydantic-settings
 python-dotenv
 pandas
 streamlit
-matplotlibdir 
+matplotlib
