@@ -1,7 +1,7 @@
 import requests
 from app.core.config import settings
 
-API_URL = "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english"
+API_URL = "https://router.huggingface.co/hf-inference/models/distilbert-base-uncased-finetuned-sst-2-english"
 
 headers = {
     "Authorization": f"Bearer {settings.HF_API_TOKEN}",
@@ -10,22 +10,21 @@ headers = {
 
 def analyze_sentiments(comments):
 
-    # ⭐ IMPORTANT DEBUG LINE
-    print("HF TOKEN:", settings.HF_API_TOKEN)
-
     sentiments = []
 
     for comment in comments:
 
         try:
 
-            payload = {"inputs": comment}
+            payload = {
+                "inputs": comment
+            }
 
             response = requests.post(
                 API_URL,
                 headers=headers,
                 json=payload,
-                timeout=20
+                timeout=30
             )
 
             print("STATUS:", response.status_code)
@@ -40,15 +39,13 @@ def analyze_sentiments(comments):
 
             result = response.json()
 
-            if isinstance(result, dict) and "error" in result:
-                print("HF API Error:", result["error"])
-                sentiments.append({
-                    "label": "NEUTRAL",
-                    "score": 0
-                })
-                continue
+            # HuggingFace returns nested list
+            if isinstance(result, list) and isinstance(result[0], list):
+                predictions = result[0]
+            else:
+                predictions = result
 
-            best = max(result, key=lambda x: x["score"])
+            best = max(predictions, key=lambda x: x["score"])
 
             sentiments.append({
                 "label": best["label"],
@@ -57,7 +54,7 @@ def analyze_sentiments(comments):
 
         except Exception as e:
 
-            print("Sentiment error:", str(e))
+            print("Sentiment error:", e)
 
             sentiments.append({
                 "label": "NEUTRAL",
