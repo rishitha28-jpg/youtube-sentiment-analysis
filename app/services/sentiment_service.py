@@ -24,7 +24,8 @@ from transformers import pipeline
 # load model once
 sentiment_model = pipeline(
     "sentiment-analysis",
-    model="distilbert-base-uncased-finetuned-sst-2-english"
+    model="distilbert-base-uncased-finetuned-sst-2-english",
+    device=-1
 )
 
 def analyze_sentiments(comments):
