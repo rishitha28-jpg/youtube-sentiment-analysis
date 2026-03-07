@@ -1,7 +1,7 @@
 import requests
 from app.core.config import settings
 
-API_URL = "https://router.huggingface.co/hf-inference/models/distilbert-base-uncased-finetuned-sst-2-english"
+API_URL = "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english"
 
 headers = {
     "Authorization": f"Bearer {settings.HF_API_TOKEN}",
