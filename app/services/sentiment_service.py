@@ -1,48 +1,45 @@
 import requests
 from app.core.config import settings
 
-# Official HuggingFace inference endpoint
-API_URL = "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english"
+API_URL = "https://router.huggingface.co/hf-inference/models/distilbert-base-uncased-finetuned-sst-2-english"
 
 headers = {
-    "Authorization": f"Bearer {settings.HF_API_TOKEN}"
+    "Authorization": f"Bearer {settings.HF_API_TOKEN}",
+    "Content-Type": "application/json"
 }
 
 
 def analyze_sentiments(comments):
 
-    sentiments = []
+    payload = {"inputs": comments}
 
-    for comment in comments:
+    try:
+        response = requests.post(
+            API_URL,
+            headers=headers,
+            json=payload,
+            timeout=30
+        )
 
-        payload = {
-            "inputs": comment
-        }
+        result = response.json()
 
-        try:
+        sentiments = []
 
-            response = requests.post(
-                API_URL,
-                headers=headers,
-                json=payload,
-                timeout=30
-            )
+        for r in result:
 
-            result = response.json()
+            # HuggingFace returns list of predictions
+            if isinstance(r, list):
 
-            # Debug print
-            print("HF response:", result)
+                # choose highest score prediction
+                r = max(r, key=lambda x: x["score"])
 
-            if isinstance(result, list):
-                result = result[0]
-
-            label = result.get("label", "NEUTRAL")
-            score = result.get("score", 0)
+            label = r.get("label", "NEUTRAL")
+            score = r.get("score", 0)
 
             sentiments.append((label, round(score * 100, 2)))
 
-        except Exception as e:
-            print("Sentiment error:", e)
-            sentiments.append(("NEUTRAL", 0))
+        return sentiments
 
-    return sentiments
+    except Exception as e:
+        print("Sentiment error:", e)
+        return [("NEUTRAL", 0.0)] * len(comments)
