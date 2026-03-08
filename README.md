@@ -118,8 +118,3 @@ https://requests.readthedocs.io/
 - Comment filtering
 - Video comparison analytics
 
----
-
-# 👨‍💻 Author
-
-Developed as a Machine Learning project to analyze public sentiment from YouTube comments using modern NLP techniques.

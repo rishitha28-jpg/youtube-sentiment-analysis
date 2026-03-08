@@ -136,11 +136,12 @@ if st.button("Analyze"):
 
         st.subheader("📊 Sentiment Percentage")
 
-        fig_percent, ax_percent = plt.subplots(figsize=(4,3))
+        fig_percent, ax_percent = plt.subplots(figsize=(3,2))
 
         ax_percent.bar(
             percentage_df["Sentiment"],
-            percentage_df["Percentage"]
+            percentage_df["Percentage"],
+            width=0.3
         )
 
         ax_percent.set_ylabel("Percentage (%)")
@@ -223,4 +224,15 @@ if st.button("Analyze"):
         for _, row in top_negative.iterrows():
             st.error(f"{row['comment']}  (Score: {row['score']})")
     else:
-        st.write("No negative comments found.")
+        st.info("No negative comments detected. Showing neutral comments instead.")
+        
+        neutral_comments = (
+        df[df["sentiment"] == "NEUTRAL"]
+        .sort_values(by="score")
+        .head(5)
+    )
+        
+    for _, row in neutral_comments.iterrows():
+        st.warning(f"{row['comment']}  (Score: {row['score']})")
+        
+        
