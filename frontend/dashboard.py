@@ -136,12 +136,12 @@ if st.button("Analyze"):
 
         st.subheader("📊 Sentiment Percentage")
 
-        fig_percent, ax_percent = plt.subplots(figsize=(3,2))
+        fig_percent, ax_percent = plt.subplots(figsize=(2,1.5))
 
         ax_percent.bar(
             percentage_df["Sentiment"],
             percentage_df["Percentage"],
-            width=0.3
+            width=0.2
         )
 
         ax_percent.set_ylabel("Percentage (%)")
